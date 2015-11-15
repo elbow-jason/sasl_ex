@@ -21,6 +21,10 @@ defmodule SaslEx do
     |> Enum.join("")
   end
 
+  def to_map(field_list) do
+    Enum.reduce(%{}, fn item, acc -> Map.merge(acc, item |> Field.to_map) end)
+  end
+
   defp do_decode([], "", decoded) do
     decoded |> Enum.reverse
   end

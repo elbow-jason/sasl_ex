@@ -42,4 +42,12 @@ defmodule SaslEx.Field do
     end
   end
 
+  def magic(value \\ 0x80) do
+    %Field{key: :magic, size: 8,  value: value}
+  end 
+
+  def opcode(value \\ 0x20) do
+    %Field{key: :opcode, size: 8, value: value}
+  end
+
 end
