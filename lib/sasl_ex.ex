@@ -14,17 +14,7 @@ defmodule SaslEx do
   ]
 
   def from_bytes(bytes) when bytes |> is_binary do
-    byte_count = String.length(bytes)
-    if byte_count < 24 do
-      # NOTE:
-      # do not include the bytes input string in the error message
-      # it may contain sensitive data
-      message = """
-      A sasl message must be at least 24 bytes long.
-      The input was #{byte_count} bytes long.
-      """
-      raise SaslError, message: message
-    end
+    validate!(bytes)
 
     <<  magic           :: size(8),
         opcode          :: size(8),
@@ -51,4 +41,33 @@ defmodule SaslEx do
     }
 
   end
+
+  def to_bytes(%SaslEx{} = saslex) do
+    <<  saslex.magic           :: size(8),
+        saslex.opcode          :: size(8),
+        saslex.key_length      :: size(16),
+        saslex.extra_length    :: size(8),
+        saslex.data_type       :: size(8),
+        saslex.v_bucket        :: size(16),
+        saslex.total_body      :: size(32),
+        saslex.opaque          :: size(32),
+        saslex.cas             :: size(64),
+        saslex.payload         :: binary >>
+  end
+
+  def validate!(bytes) when bytes |> is_binary do
+    byte_count = String.length(bytes)
+    if byte_count < 24 do
+      # NOTE:
+      # do not include the bytes input string in the error message
+      # it may contain sensitive data
+      message = """
+      A sasl message must be at least 24 bytes long.
+      The input was #{byte_count} bytes long.
+      """
+      raise SaslEx.Error, message: message
+    end
+    true
+  end
+
 end

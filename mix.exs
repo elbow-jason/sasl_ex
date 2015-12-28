@@ -2,12 +2,16 @@ defmodule SaslEx.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :sasl_ex,
-     version: "0.0.1",
-     elixir: "~> 1.1",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps]
+    [
+      app: :sasl_ex,
+      version: "0.1.0",
+      elixir: "~> 1.1",
+      build_embedded: Mix.env == :prod,
+      start_permanent: Mix.env == :prod,
+      deps: deps,
+      package: package,
+      description: description,
+    ]
   end
 
   # Configuration for the OTP application
@@ -29,4 +33,20 @@ defmodule SaslEx.Mixfile do
   defp deps do
     []
   end
+
+ defp description do
+    """
+    A lib for decoding bytes in the format of the SASL protocol into an Elixir struct.
+    """
+  end
+
+  defp package do
+    [
+       files: ["lib", "priv", "mix.exs", "README*", "readme*", "LICENSE*", "license*"],
+       maintainers: ["Jason Goldberger"],
+       licenses: ["MIT"],
+       links: %{"GitHub" => "https://github.com/elbow-jason/sasl_ex"}
+    ]
+  end
+
 end
