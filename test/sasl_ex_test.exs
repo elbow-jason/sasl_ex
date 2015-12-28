@@ -3,37 +3,54 @@ defmodule SaslExTest do
   doctest SaslEx
 
   # from http://docs.couchbase.com/developer/dev-guide-3.0/sasl.html
-  @list_mechanisms << 
-    0x80                :: size(8),
-    0x20                :: size(8),
-    0x0000              :: size(16),
-    0x00                :: size(8),
-    0x00                :: size(8),
-    0x0000              :: size(16),
-    0x00000000          :: size(32),
-    0x00000000          :: size(32),
-    0x0000000000000000  :: size(64),
+  @bytes << 
+    0x1 :: size(8),
+    0x2 :: size(8),
+    0x3 :: size(16),
+    0x4 :: size(8),
+    0x5 :: size(8),
+    0x6 :: size(16),
+    0x7 :: size(32),
+    0x8 :: size(32),
+    0x9 :: size(64),
   >>
 
-  test "SaslEx can parse list_mechanisms correctly" do
-    message = SaslEx.from_bytes @list_mechanisms
-    assert message.magic          == 0x80
-    assert message.opcode         == 0x20
-    assert message.key_length     == 0x0
-    assert message.extra_length   == 0x0
-    assert message.data_type      == 0x0
-    assert message.v_bucket       == 0x0
-    assert message.total_body     == 0x0
-    assert message.opaque         == 0x0
-    assert message.cas            == 0x0
+  test "from_bytes can parse bytes correctly" do
+    message = SaslEx.from_bytes @bytes
+    assert message.magic          == 0x1
+    assert message.opcode         == 0x2
+    assert message.key_length     == 0x3
+    assert message.extra_length   == 0x4
+    assert message.data_type      == 0x5
+    assert message.v_bucket       == 0x6
+    assert message.total_body     == 0x7
+    assert message.opaque         == 0x8
+    assert message.cas            == 0x9
     assert message.payload        == ""
   end
 
-  test "SaslEx handles remaining bytes correctly" do
-    bytes = @list_mechanisms <> "JasonWasHere"
+  test "from_bytes handles remaining bytes correctly" do
+    bytes = @bytes <> "JasonWasHere"
     message = SaslEx.from_bytes bytes
     assert message.payload == "JasonWasHere"
   end
+
+  test "to_bytes handles bytes and payloads correctly" do
+    expected = "abcdefghijklmnopqrstuvwx1234"
+    sasl = %SaslEx{
+      magic:        "a",              
+      opcode:       "b",               
+      key_length:   "cd",                   
+      extra_length: "e",                     
+      data_type:    "f",                  
+      v_bucket:     "gh",                 
+      total_body:   "ijkl",                   
+      opaque:       "mnop",               
+      cas:          "qrstuvwx",            
+      payload:      "1234",                
+    }
+    assert SaslEx.to_bytes(sasl) == expected
+  end 
 
 end
 
