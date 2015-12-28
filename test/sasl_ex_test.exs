@@ -36,21 +36,28 @@ defmodule SaslExTest do
   end
 
   test "to_bytes handles bytes and payloads correctly" do
-    expected = "abcdefghijklmnopqrstuvwx1234"
     sasl = %SaslEx{
-      magic:        "a",              
-      opcode:       "b",               
-      key_length:   "cd",                   
-      extra_length: "e",                     
-      data_type:    "f",                  
-      v_bucket:     "gh",                 
-      total_body:   "ijkl",                   
-      opaque:       "mnop",               
-      cas:          "qrstuvwx",            
-      payload:      "1234",                
+      magic:        97,
+      opcode:       98,
+      key_length:   25444,
+      extra_length: 101,
+      data_type:    102,
+      v_bucket:     26472,
+      opaque:       1835954032,
+      total_body:   1768581996,
+      cas:          8174723217654970232,
+      payload:      "1234",
     }
-    assert SaslEx.to_bytes(sasl) == expected
-  end 
+    bytes = "abcdefghijklmnopqrstuvwx1234"
+    assert sasl |> SaslEx.to_bytes == bytes
+  end
+
+  test "Sasl can go from bytes to struct and back correctly" do
+    bytes = "abcdefghijklmnopqrstuvwx1234"
+    assert bytes
+           |> SaslEx.from_bytes
+           |> SaslEx.to_bytes == bytes
+  end
+
 
 end
-
